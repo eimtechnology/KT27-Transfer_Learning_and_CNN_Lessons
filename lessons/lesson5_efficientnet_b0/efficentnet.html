@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EfficientNet-B0 Architecture</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            margin: 0;
+            font-size: 3em;
+            font-weight: 300;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .header p {
+            margin: 15px 0 0 0;
+            opacity: 0.9;
+            font-size: 1.3em;
+        }
+        
+        .key-concepts {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .concepts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .concept-card {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .concept-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+        }
+        
+        .concept-icon {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .concept-title {
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        
+        .architecture {
+            padding: 50px 20px;
+        }
+        
+        .flow-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 40px;
+            padding: 20px 0;
+        }
+        
+        .flow-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .stage {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .stage:hover {
+            transform: translateY(-10px);
+        }
+        
+        .stage-box {
+            padding: 20px;
+            border-radius: 15px;
+            color: white;
+            font-weight: bold;
+            text-align: center;
+            min-width: 120px;
+            min-height: 120px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .stage-box:hover {
+            transform: scale(1.05);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+        }
+        
+        .input { background: linear-gradient(135deg, #ff9a9e, #fecfef); }
+        .stem { background: linear-gradient(135deg, #a8edea, #fed6e3); }
+        .stage1 { background: linear-gradient(135deg, #ffecd2, #fcb69f); }
+        .stage2 { background: linear-gradient(135deg, #ff9a9e, #fad0c4); }
+        .stage3 { background: linear-gradient(135deg, #a8edea, #fed6e3); }
+        .stage4 { background: linear-gradient(135deg, #d299c2, #fef9d7); }
+        .stage5 { background: linear-gradient(135deg, #89f7fe, #66a6ff); }
+        .stage6 { background: linear-gradient(135deg, #fdbb2d, #22c1c3); }
+        .stage7 { background: linear-gradient(135deg, #ee9ca7, #ffdde1); }
+        .head { background: linear-gradient(135deg, #667eea, #764ba2); }
+        
+        .arrow {
+            font-size: 2em;
+            color: #667eea;
+            animation: pulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 0.7; }
+            50% { transform: scale(1.1); opacity: 1; }
+        }
+        
+        .stage-info {
+            margin-top: 15px;
+            color: #2c3e50;
+            text-align: center;
+            max-width: 140px;
+        }
+        
+        .stage-info h3 {
+            margin: 0 0 5px 0;
+            font-size: 1em;
+            color: #34495e;
+        }
+        
+        .stage-info p {
+            margin: 2px 0;
+            font-size: 0.8em;
+            opacity: 0.8;
+            line-height: 1.2;
+        }
+        
+        .mbconv-blocks {
+            display: flex;
+            gap: 3px;
+            margin-top: 8px;
+            justify-content: center;
+        }
+        
+        .mbconv-block {
+            width: 12px;
+            height: 12px;
+            border-radius: 2px;
+            opacity: 0.9;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 1px solid rgba(255,255,255,0.5);
+        }
+        
+        .mbconv-block:hover {
+            transform: scale(1.3);
+            opacity: 1;
+        }
+        
+        .mbconv1 { background: #ff6b6b; }
+        .mbconv6 { background: #4ecdc4; }
+        
+        .dimensions {
+            font-size: 0.7em;
+            opacity: 0.9;
+            margin-top: 5px;
+        }
+        
+        .kernel-info {
+            font-size: 0.6em;
+            background: rgba(255,255,255,0.3);
+            padding: 2px 5px;
+            border-radius: 8px;
+            margin-top: 3px;
+        }
+        
+        .se-indicator {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            width: 20px;
+            height: 20px;
+            background: #e74c3c;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7em;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .features-section {
+            background: #f8f9fa;
+            padding: 50px;
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-top: 30px;
+        }
+        
+        .feature-card {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            border-left: 5px solid;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+        
+        .feature1 { border-left-color: #3498db; }
+        .feature2 { border-left-color: #e74c3c; }
+        .feature3 { border-left-color: #2ecc71; }
+        .feature4 { border-left-color: #f39c12; }
+        
+        .feature-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .feature-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.5em;
+            margin-right: 15px;
+            color: white;
+        }
+        
+        .feature1 .feature-icon { background: #3498db; }
+        .feature2 .feature-icon { background: #e74c3c; }
+        .feature3 .feature-icon { background: #2ecc71; }
+        .feature4 .feature-icon { background: #f39c12; }
+        
+        .feature-title {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        .feature-description {
+            line-height: 1.7;
+            color: #5a6c7d;
+        }
+        
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            background: white;
+            margin: 30px 0;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            flex-wrap: wrap;
+        }
+        
+        .stat {
+            text-align: center;
+            margin: 10px;
+        }
+        
+        .stat-number {
+            font-size: 2.2em;
+            font-weight: bold;
+            color: #3498db;
+        }
+        
+        .stat-label {
+            color: #7f8c8d;
+            margin-top: 5px;
+            font-size: 0.9em;
+        }
+        
+        .compound-scaling {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 40px;
+            border-radius: 20px;
+            margin: 40px 0;
+            text-align: center;
+        }
+        
+        .scaling-formula {
+            font-family: 'Courier New', monospace;
+            font-size: 1.2em;
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        
+        @media (max-width: 1200px) {
+            .flow-row {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .architecture {
+                padding: 30px 10px;
+            }
+            
+            .flow-row {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .arrow {
+                transform: rotate(90deg);
+                margin: 5px 0;
+            }
+            
+            .stage-box {
+                min-width: 100px;
+                min-height: 100px;
+                padding: 15px;
+            }
+            
+            .stage-info {
+                max-width: 120px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>EfficientNet-B0 Architecture</h1>
+            <p>Compound Scaling for Efficient Neural Networks</p>
+        </div>
+        
+        <div class="key-concepts">
+            <h2 style="color: #2c3e50; margin-bottom: 20px;">Core Innovation Concepts</h2>
+            <div class="concepts-grid">
+                <div class="concept-card">
+                    <div class="concept-icon">⚖️</div>
+                    <div class="concept-title">Compound Scaling</div>
+                    <p>Uniformly scale depth, width, and resolution</p>
+                </div>
+                <div class="concept-card">
+                    <div class="concept-icon">🔧</div>
+                    <div class="concept-title">MBConv Blocks</div>
+                    <p>Mobile Inverted Bottleneck Convolutions</p>
+                </div>
+                <div class="concept-card">
+                    <div class="concept-icon">🎯</div>
+                    <div class="concept-title">SE Attention</div>
+                    <p>Squeeze-and-Excitation mechanism</p>
+                </div>
+                <div class="concept-card">
+                    <div class="concept-icon">🧠</div>
+                    <div class="concept-title">NAS Optimized</div>
+                    <p>Neural Architecture Search foundation</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="architecture">
+            <div class="flow-container">
+                <!-- First Row -->
+                <div class="flow-row">
+                    <!-- Input -->
+                    <div class="stage">
+                        <div class="stage-box input">
+                            <div>Input</div>
+                            <div class="dimensions">224×224×3</div>
+                        </div>
+                        <div class="stage-info">
+                            <h3>Input Layer</h3>
+                            <p>RGB Image</p>
+                            <p>Base resolution</p>
+                        </div>
+                    </div>
+                    
+                    <div class="arrow">→</div>
+                    
+                    <!-- Stem -->
+                    <div class="stage">
+                        <div class="stage-box stem">
+                            <div>Stem</div>
+                            <div class="dimensions">112×112×32</div>
+                            <div class="kernel-info">Conv 3×3</div>
+                        </div>
+                        <div class="stage-info">
+                            <h3>Stem Conv</h3>
+                            <p>Initial feature</p>
+                            <p>extraction</p>
+                        </div>
+                    </div>
+                    
+                    <div class="arrow">→</div>
+                    
+                    <!-- Stage 1 -->
+                    <div class="stage">
+                        <div class="stage-box stage1">
+                            <div class="se-indicator">SE</div>
+                            <div>Stage 1</div>
+                            <div class="dimensions">112×112×16</div>
+                            <div class="kernel-info">MBConv1 k3×3</div>
+                            <div class="mbconv-blocks">
+                                <div class="mbconv-block mbconv1" title="MBConv1 Block"></div>
+                            </div>
+                        </div>
+                        <div class="stage-info">
+                            <h3>MBConv1</h3>
+                            <p>1 block</p>
+                            <p>No expansion</p>
+                            <p>SE attention</p>
+                        </div>
+                    </div>
+                    
+                    <div class="arrow">→</div>
+                    
+                    <!-- Stage 2 -->
+                    <div class="stage">
+                        <div class="stage-box stage2">
+                            <div class="se-indicator">SE</div>
+                            <div>Stage 2</div>
+                            <div class="dimensions">56×56×24</div>
+                            <div class="kernel-info">MBConv6 k3×3</div>
+                            <div class="mbconv-blocks">
+                                <div class="mbconv-block mbconv6"></div>
+                                <div class="mbconv-block mbconv6"></div>
+                            </div>
+                        </div>
+                        <div class="stage-info">
+                            <h3>MBConv6</h3>
+                            <p>2 blocks</p>
+                            <p>6× expansion</p>
+                            <p>First downsample</p>
+                        </div>
+                    </div>
+                    
+                    <div class="arrow">→</div>
+                    
+                    <!-- Stage 3 -->
+                    <div class="stage">
+                        <div class="stage-box stage3">
+                            <div class="se-indicator">SE</div>
+                            <div>Stage 3</div>
+                            <div class="dimensions">28×28×40</div>
+                            <div class="kernel-info">MBConv6 k5×5</div>
+                            <div class="mbconv-blocks">
+                                <div class="mbconv-block mbconv6"></div>
+                                <div class="mbconv-block mbconv6"></div>
+                            </div>
+                        </div>
+                        <div class="stage-info">
+                            <h3>MBConv6</h3>
+                            <p>2 blocks</p>
+                            <p>5×5 kernels</p>
+                            <p>Larger receptive field</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Connecting Arrow Between Rows -->
+                <div class="arrow" style="font-size: 3em; transform: rotate(90deg);">↓</div>
+                
+                <!-- Second Row -->
+                <div class="flow-row">
+                    <!-- Stage 4 -->
+                    <div class="stage">
+                        <div class="stage-box stage4">
+                            <div class="se-indicator">SE</div>
+                            <div>Stage 4</div>
+                            <div class="dimensions">14×14×80</div>
+                            <div class="kernel-info">MBConv6 k3×3</div>
+                            <div class="mbconv-blocks">
+                                <div class="mbconv-block mbconv6"></div>
+                                <div class="mbconv-block mbconv6"></div>
+                                <div class="mbconv-block mbconv6"></div>
+                            </div>
+                        </div>
+                        <div class="stage-info">
+                            <h3>MBConv6</h3>
+                            <p>3 blocks</p>
+                            <p>3×3 kernels</p>
+                            <p>Balanced efficiency</p>
+                        </div>
+                    </div>
+                    
+                    <div class="arrow">→</div>
+                    
+                    <!-- Stage 5 -->
+                    <div class="stage">
+                        <div class="stage-box stage5">
+                            <div class="se-indicator">SE</div>
+                            <div>Stage 5</div>
+                            <div class="dimensions">14×14×112</div>
+                            <div class="kernel-info">MBConv6 k5×5</div>
+                            <div class="mbconv-blocks">
+                                <div class="mbconv-block mbconv6"></div>
+                                <div class="mbconv-block mbconv6"></div>
+                                <div class="mbconv-block mbconv6"></div>
+                            </div>
+                        </div>
+                        <div class="stage-info">
+                            <h3>MBConv6</h3>
+                            <p>3 blocks</p>
+                            <p>5×5 kernels</p>
+                            <p>Same resolution</p>
+                        </div>
+                    </div>
+                    
+                    <div class="arrow">→</div>
+                    
+                    <!-- Stage 6 -->
+                    <div class="stage">
+                        <div class="stage-box stage6">
+                            <div class="se-indicator">SE</div>
+                            <div>Stage 6</div>
+                            <div class="dimensions">7×7×192</div>
+                            <div class="kernel-info">MBConv6 k5×5</div>
+                            <div class="mbconv-blocks">
+                                <div class="mbconv-block mbconv6"></div>
+                                <div class="mbconv-block mbconv6"></div>
+                                <div class="mbconv-block mbconv6"></div>
+                                <div class="mbconv-block mbconv6"></div>
+                            </div>
+                        </div>
+                        <div class="stage-info">
+                            <h3>MBConv6</h3>
+                            <p>4 blocks</p>
+                            <p>Most blocks</p>
+                            <p>High-level features</p>
+                        </div>
+                    </div>
+                    
+                    <div class="arrow">→</div>
+                    
+                    <!-- Stage 7 -->
+                    <div class="stage">
+                        <div class="stage-box stage7">
+                            <div class="se-indicator">SE</div>
+                            <div>Stage 7</div>
+                            <div class="dimensions">7×7×320</div>
+                            <div class="kernel-info">MBConv6 k3×3</div>
+                            <div class="mbconv-blocks">
+                                <div class="mbconv-block mbconv6"></div>
+                            </div>
+                        </div>
+                        <div class="stage-info">
+                            <h3>MBConv6</h3>
+                            <p>1 block</p>
+                            <p>Final features</p>
+                            <p>Max channels</p>
+                        </div>
+                    </div>
+                    
+                    <div class="arrow">→</div>
+                    
+                    <!-- Head -->
+                    <div class="stage">
+                        <div class="stage-box head">
+                            <div>Head</div>
+                            <div class="dimensions">1×1×1280</div>
+                            <div class="kernel-info">Conv + GAP + FC</div>
+                        </div>
+                        <div class="stage-info">
+                            <h3>Classification</h3>
+                            <p>Conv 1×1</p>
+                            <p>Global pool</p>
+                            <p>1000 classes</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="features-section">
+            <h2 style="text-align: center; color: #2c3e50; margin-bottom: 30px;">Key Architecture Features</h2>
+            
+            <div class="stats">
+                <div class="stat">
+                    <div class="stat-number">5.3M</div>
+                    <div class="stat-label">Parameters</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number">16</div>
+                    <div class="stat-label">MBConv Blocks</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number">7</div>
+                    <div class="stat-label">Processing Stages</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number">77.1%</div>
+                    <div class="stat-label">ImageNet Top-1</div>
+                </div>
+            </div>
+            
+            <div class="compound-scaling">
+                <h2 style="margin-top: 0;">Compound Scaling Method</h2>
+                <p style="font-size: 1.1em; line-height: 1.7;">
+                    EfficientNet uses a principled method to scale up CNNs by uniformly scaling 
+                    network depth, width, and resolution with a set of fixed scaling coefficients.
+                </p>
+                <div class="scaling-formula">
+                    depth: d = α^φ<br>
+                    width: w = β^φ<br>
+                    resolution: r = γ^φ<br>
+                    <br>
+                    subject to: α · β² · γ² ≈ 2<br>
+                    α ≥ 1, β ≥ 1, γ ≥ 1
+                </div>
+            </div>
+            
+            <div class="features-grid">
+                <div class="feature-card feature1">
+                    <div class="feature-header">
+                        <div class="feature-icon">🔧</div>
+                        <div class="feature-title">MBConv Architecture</div>
+                    </div>
+                    <div class="feature-description">
+                        <p><strong>Mobile Inverted Bottleneck:</strong> Uses depthwise separable convolutions with inverted residuals and linear bottlenecks for efficient computation.</p>
+                        <p><strong>Expansion Factor:</strong> MBConv6 blocks expand channels by 6× in the middle layer, then compress back to save parameters.</p>
+                    </div>
+                </div>
+                
+                <div class="feature-card feature2">
+                    <div class="feature-header">
+                        <div class="feature-icon">🎯</div>
+                        <div class="feature-title">Squeeze-and-Excitation</div>
+                    </div>
+                    <div class="feature-description">
+                        <p><strong>Channel Attention:</strong> SE blocks adaptively recalibrate channel-wise feature responses by explicitly modelling interdependencies between channels.</p>
+                        <p><strong>Performance Boost:</strong> Minimal computational overhead with significant accuracy improvements across all stages.</p>
+                    </div>
+                </div>
+                
+                <div class="feature-card feature3">
+                    <div class="feature-header">
+                        <div class="feature-icon">⚖️</div>
+                        <div class="feature-title">Compound Scaling</div>
+                    </div>
+                    <div class="feature-description">
+                        <p><strong>Balanced Growth:</strong> Unlike conventional practice that arbitrarily scales only one dimension, compound scaling uniformly scales all three dimensions.</p>
+                        <p><strong>Efficiency Gains:</strong> Achieves better accuracy and efficiency than scaling individual dimensions independently.</p>
+                    </div>
+                </div>
+                
+                <div class="feature-card feature4">
+                    <div class="feature-header">
+                        <div class="feature-icon">🧠</div>
+                        <div class="feature-title">NAS Foundation</div>
+                    </div>
+                    <div class="feature-description">
+                        <p><strong>Automated Design:</strong> Base architecture (B0) discovered through Neural Architecture Search for optimal accuracy-efficiency trade-off.</p>
+                        <p><strong>Scalable Family:</strong> B0 serves as foundation for scaling up to B1-B7 variants using compound scaling method.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Add interactive effects
+        document.querySelectorAll('.mbconv-block').forEach(block => {
+            block.addEventListener('click', function() {
+                this.style.transform = 'scale(1.5) rotate(45deg)';
+                this.style.borderColor = 'white';
+                setTimeout(() => {
+                    this.style.transform = 'scale(1)';
+                    this.style.borderColor = 'rgba(255,255,255,0.5)';
+                }, 300);
+            });
+        });
+        
+        // Scroll animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateX(0)';
+                }
+            });
+        }, observerOptions);
+        
+        document.querySelectorAll('.stage').forEach((stage, index) => {
+            stage.style.opacity = '0';
+            stage.style.transform = 'translateX(-30px)';
+            stage.style.transition = `all 0.6s ease ${index * 0.1}s`;
+            observer.observe(stage);
+        });
+        
+        // SE indicator animation
+        document.querySelectorAll('.se-indicator').forEach(indicator => {
+            indicator.addEventListener('mouseenter', function() {
+                this.style.animation = 'none';
+                this.style.transform = 'scale(1.3)';
+                this.style.background = '#27ae60';
+            });
+            
+            indicator.addEventListener('mouseleave', function() {
+                this.style.transform = 'scale(1)';
+                this.style.background = '#e74c3c';
+            });
+        });
+        
+        // Add hover effect for arrows
+        document.querySelectorAll('.arrow').forEach(arrow => {
+            arrow.addEventListener('mouseenter', function() {
+                this.style.color = '#3498db';
+                this.style.transform = 'scale(1.2)';
+            });
+            
+            arrow.addEventListener('mouseleave', function() {
+                this.style.color = '#667eea';
+                this.style.transform = 'scale(1)';
+            });
+        });
+        
+        // Feature card interactions
+        document.querySelectorAll('.feature-card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.borderLeftWidth = '8px';
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                this.style.borderLeftWidth = '5px';
+            });
+        });
+        
+        // Concept card animations
+        document.querySelectorAll('.concept-card').forEach((card, index) => {
+            setTimeout(() => {
+                card.style.opacity = '1';
+                card.style.transform = 'translateY(0)';
+            }, index * 200);
+            
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px)';
+            card.style.transition = 'all 0.6s ease';
+        });
+    </script>
+</body>
+</html>

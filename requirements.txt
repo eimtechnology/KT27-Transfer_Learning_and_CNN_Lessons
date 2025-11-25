@@ -1,0 +1,61 @@
+# Transfer Learning with PyTorch - Course Dependencies
+# 
+# Installation methods:
+# 1. Automated: python setup_auto_venv.py
+# 2. Manual: pip install -r requirements.txt
+
+# ============================================
+# Core Tools (Install First)
+# ============================================
+pip>=23.0.0
+setuptools>=65.0.0
+wheel>=0.37.0
+
+# ============================================
+# Numerical Computing Foundation
+# ============================================
+numpy>=1.21.0
+
+# ============================================
+# Deep Learning Framework
+# ============================================
+torch>=2.0.0
+torchvision>=0.15.0
+
+# ============================================
+# Data Science Stack
+# ============================================
+pandas>=1.3.0
+scikit-learn>=1.0.0
+
+# ============================================
+# Visualization
+# ============================================
+matplotlib>=3.5.0
+seaborn>=0.11.0
+
+# ============================================
+# Image Processing
+# ============================================
+pillow>=8.3.0
+
+# ============================================
+# Progress & UI
+# ============================================
+tqdm>=4.62.0
+
+# ============================================
+# Jupyter Environment (Required)
+# ============================================
+jupyter>=1.0.0
+jupyterlab>=3.4.0
+ipykernel>=6.0.0
+
+# ============================================
+# Network & SSL
+# ============================================
+requests>=2.25.0
+certifi>=2021.5.30
+
+# Note: Additional packages will be installed automatically based on your system
+# PyTorch installation will automatically detect CUDA/MPS availability
